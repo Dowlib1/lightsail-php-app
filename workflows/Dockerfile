@@ -1,24 +1,20 @@
-name=Dockerfile
-FROM php:8.2-apache
+FROM php:8.3-apache
 
-# Install dependencies for pdo_mysql and other typical extensions
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      libzip-dev \
-      unzip \
-      git \
-      curl \
-      ca-certificates && \
-    docker-php-ext-install pdo pdo_mysql && \
-    rm -rf /var/lib/apt/lists/*
+# Install PDO MySQL extension
+RUN docker-php-ext-install pdo pdo_mysql
 
-# Copy application into webroot
+# Enable Apache modules
+RUN a2enmod rewrite
+
+# Copy app files
 COPY . /var/www/html/
 
-# Ensure correct permissions
-RUN chown -R www-data:www-data /var/www/html && chmod -R 750 /var/www/html
+# Set correct permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Expose port 80 (container)
+# Expose port 80
 EXPOSE 80
 
-# Default command runs Apache in the foreground (image base does this)
+# Start Apache
+CMD ["apache2-foreground"]

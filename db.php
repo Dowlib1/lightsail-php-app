@@ -4,9 +4,9 @@ name=db.php
 
 $DB_HOST = getenv('DB_HOST') ?: '127.0.0.1';
 $DB_PORT = getenv('DB_PORT') ?: 3306;
-$DB_NAME = getenv('DB_NAME') ?: 'YourName_ApplicationName_2026';
-$DB_USER = getenv('DB_USER') ?: 'dbusername';
-$DB_PASS = getenv('DB_PASS') ?: 'dbpassword';
+$DB_NAME = getenv('DB_NAME') ?: 'Oladimeji-NOUN-2026';
+$DB_USER = getenv('DB_USER') ?: 'dbmasteruser';
+$DB_PASS = getenv('DB_PASS') ?: 'Hik124578';
 
 function getPDO() {
     global $DB_HOST, $DB_PORT, $DB_NAME, $DB_USER, $DB_PASS;
