@@ -1,13 +1,18 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 
-# Install mysqli extension for MySQL
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+# Install only the MySQL PDO driver (pdo extension is already in the base image)
+RUN docker-php-ext-install pdo_mysql
 
-# Copy application code
+# Enable Apache rewrite module (useful for clean URLs)
+RUN a2enmod rewrite
+
+# Copy all application files
 COPY . /var/www/html/
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/
+# Set proper permissions for Apache
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Expose port 80
 EXPOSE 80
+
+CMD ["apache2-foreground"]
