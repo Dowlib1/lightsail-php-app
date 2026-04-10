@@ -5,16 +5,12 @@ services:
     build: .
     ports:
       - "8080:80"
-    environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=YourName_ApplicationName_2026
-      - DB_USER=user
-      - DB_PASS=password
+    env_file:
+      - .env
     depends_on:
-      - db
+      - mysql
 
-  db:
+  mysql:
     image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=rootpassword

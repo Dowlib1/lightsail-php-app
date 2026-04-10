@@ -1,5 +1,29 @@
 <?php
-// index.php - simple UI
+// index.php
+require_once 'db.php';   // This now uses secure env vars
+
+$pdo = require 'db.php';  // Get the PDO connection
+
+// Rest of your code (create table, fetch messages, etc.)
+try {
+    // Create table if not exists
+    $pdo->exec("CREATE TABLE IF NOT EXISTS messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        text VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // Insert sample data if empty
+    $stmt = $pdo->query("SELECT COUNT(*) FROM messages");
+    if ($stmt->fetchColumn() == 0) {
+        $pdo->exec("INSERT INTO messages (text) VALUES ('I am exploring the use of AWS Lightsail with NOUN app by Oladimeji')");
+    }
+
+    $messages = $pdo->query("SELECT * FROM messages ORDER BY created_at DESC")->fetchAll();
+
+} catch (Exception $e) {
+    $error = "Error fetching data: " . $e->getMessage();
+}
 ?>
 <!doctype html>
 <html lang="en">

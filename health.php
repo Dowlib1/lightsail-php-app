@@ -1,22 +1,25 @@
 <?php
-// health.php - health check endpoint
 header('Content-Type: application/json');
 
-$ok = true;
-$time = date(DATE_ATOM);
+// Check database connection
+$status = 'healthy';
+$message = 'PHP Docker app running with secure DB credentials via environment variables';
+try {
+    require_once __DIR__ . '/db.php';
+    $pdo = require __DIR__ . '/db.php';
+    $stmt = $pdo->query('SELECT 1');
+    if (!$stmt->fetchColumn()) {
+        throw new Exception('DB query failed');
+    }
+} catch (Exception $e) {
+    $status = 'unhealthy';
+    $message = 'Database connection failed: ' . $e->getMessage();
+}
 
-// Optionally do a lightweight DB check (comment out if not desired)
-// require_once __DIR__ . '/db.php';
-// try {
-//   $pdo = getPDO();
-//   $stmt = $pdo->query('SELECT 1');
-//   $ok = (bool)$stmt->fetchColumn();
-// } catch (Exception $e) {
-//   $ok = false;
-// }
-
-http_response_code($ok ? 200 : 503);
 echo json_encode([
-  'status' => $ok ? 'ok' : 'unhealthy',
-  'time' => $time
+    'status' => $status,
+    'app' => 'Oladimeji-NOUN-2026',
+    'message' => $message,
+    'timestamp' => date('Y-m-d H:i:s')
 ]);
+?>
