@@ -1,11 +1,11 @@
-name: Build and Push to ECR
+name: Build, Push to ECR and Deploy to Lightsail
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,10 +23,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag and push Docker image to ECR
+      - name: Build and push Docker image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: oladimeji-noun-2026
+          ECR_REPOSITORY: oladimeji-noun-app
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -34,6 +34,31 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Deployment successful
-        run: |
-          echo "Docker image successfully pushed to ECR: ${{ steps.login-ecr.outputs.registry }}/oladimeji-noun-app:latest"
+      - name: Deploy to Lightsail Instance via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.LIGHTSAIL_HOST }}
+          username: ubuntu
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          port: 22
+          script: |
+            echo "=== Logging into ECR ==="
+            aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+
+            echo "=== Stopping old container ==="
+            docker stop noun-app 2>/dev/null || true
+            docker rm noun-app 2>/dev/null || true
+
+            echo "=== Pulling latest image ==="
+            docker pull ${{ steps.login-ecr.outputs.registry }}/oladimeji-noun-app:latest
+
+            echo "=== Starting new container with DB credentials ==="
+            docker run -d --name noun-app \
+              -p 80:80 \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_NAME=${{ secrets.DB_NAME }} \
+              -e DB_USER=${{ secrets.DB_USER }} \
+              -e DB_PASSWORD='${{ secrets.DB_PASSWORD }}' \
+              ${{ steps.login-ecr.outputs.registry }}/oladimeji-noun-app:latest
+
+            echo "✅ Deployment completed successfully!"
