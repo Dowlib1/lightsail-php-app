@@ -16,7 +16,7 @@ try {
     // Insert sample data if empty
     $stmt = $pdo->query("SELECT COUNT(*) FROM messages");
     if ($stmt->fetchColumn() == 0) {
-        $pdo->exec("INSERT INTO messages (text) VALUES ('I am exploring the use of AWS Lightsail with NOUN app by Oladimeji')");
+        $pdo->exec("INSERT INTO messages (text) VALUES ('I am exploring the use of AWS Lightsail with NOUN app by Oladimeji Salawu')");
     }
 
     $messages = $pdo->query("SELECT * FROM messages ORDER BY created_at DESC")->fetchAll();
