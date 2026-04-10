@@ -23,7 +23,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag and push Docker image
+      - name: Build, tag and push Docker image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: oladimeji-noun-app
@@ -34,5 +34,6 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Show success message
-        run: echo "Image successfully pushed to ECR: $ECR_REGISTRY/oladimeji-noun-app:latest"
+      - name: Deployment successful
+        run: |
+          echo "Docker image successfully pushed to ECR: ${{ steps.login-ecr.outputs.registry }}/oladimeji-noun-app:latest"
