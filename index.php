@@ -58,7 +58,7 @@ try {
         <!-- Main Card -->
         <div class="glass rounded-3xl shadow-2xl overflow-hidden">
             <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-10">
-                <h2 class="text-3xl font-bold mb-3">"I am exploring the use of AWS Lightsail"</h2>
+                <h2 class="text-3xl font-bold mb-3">"I am exploring the use of AWS Lightsail-Team Lead; Henry"</h2>
                 <p class="text-lg opacity-90">A monolithic PHP + MySQL application deployed using Docker and ECR</p>
             </div>
 
